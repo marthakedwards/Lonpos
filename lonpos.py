@@ -4,10 +4,6 @@
 # for each piece, find out all the places it can live
 # pick the first piece, place it somewhere, then get rid of all the options
 # for all the other pieces that would intersect
-locations = []
-for i in range(5):
-	for j in range(11):
-		locations.append([i,j])
 
 pieces = []
 pieces.append({"name": "gray", \
@@ -47,6 +43,9 @@ pieces.append({"name": "orange", \
 	"coords": [[0, 0], [0, 1], [1, 0], [0, 2]], \
 	"height": 2, "width": 3})
 
+for piece in pieces:
+	piece["coords"] = sorted(piece["coords"])
+
 slots = []
 
 def draw(piece):
@@ -68,7 +67,7 @@ def rotate(piece):
 	new_coords = []
 	for coord in piece["coords"]:
 		new_coords.append([(-1 * coord[1]) + piece["width"] - 1, coord[0]])
-	new_piece = {"name": piece["name"], "coords": new_coords, \
+	new_piece = {"name": piece["name"], "coords": sorted(new_coords), \
 		"height": piece["width"], "width": piece["height"]}
 	return new_piece
 
@@ -76,29 +75,31 @@ def reflect(piece):
 	new_coords = []
 	for coord in piece["coords"]:
 		new_coords.append([coord[0], (piece["width"] - 1) - coord[1]])
-	new_piece = {"name": piece["name"], "coords": new_coords, \
+	new_piece = {"name": piece["name"], "coords": sorted(new_coords), \
 		"height": piece["height"], "width": piece["width"]}
 	return new_piece
 
-def get_all_positions(piece, board):
-	positions = []
+# def get_all_positions(piece, board):
 
-	slots.append({"name": piece["name"], })
-
-def equal(piece, other):
-	return sorted(piece["coords"]) == sorted(other["coords"])
 
 def get_unique_translations(piece):
+	dummy = [piece, \
+		rotate(piece), \
+		rotate(rotate(piece)), \
+		rotate(rotate(rotate(piece))), \
+		reflect(piece), \
+		reflect(rotate(piece)), \
+		reflect(rotate(rotate(piece))), \
+		reflect(rotate(rotate(rotate(piece))))]
 	translations = []
-	translations.append(piece)
+	for translation in dummy:
+		if translation not in translations:
+			translations.append(translation)
+	return translations
 
 for piece in pieces:
 	print(piece["name"])
-	draw(piece)
-	if not equal(piece, reflect(piece)):
-		draw(reflect(piece))
-	# draw(rotate(piece))
-	# draw(rotate(rotate(piece)))
-	# draw(rotate(rotate(rotate(piece))))
+	for translation in get_unique_translations(piece):
+		draw(translation)
 	print("\n\n")
 
