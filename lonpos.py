@@ -5,7 +5,7 @@
 # pick the first piece, place it somewhere, then get rid of all the options
 # for all the other pieces that would intersect
 
-import itertools, string
+import itertools, string, copy
 
 # populate the pieces array
 pieces = []
@@ -151,10 +151,15 @@ board = [[" " for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT)]
 def get_all_positions(piece, board):
 	positions = []
 	for translation in get_unique_translations(piece):
-		for j in range(BOARD_WIDTH):
-			for i in range(BOARD_HEIGHT):
+		for i in range(BOARD_HEIGHT):
+			for j in range(BOARD_WIDTH):
 				if is_valid_position(translation, [i, j]):
 					positions.append(shift(translation, [i, j]))
+	# for position in positions:
+	# 	b1 = [[" " for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT)]
+	# 	board_insert(b1, position)
+	# 	print_board(b1)
+	# 	print("\n")
 	return positions
 
 # check if the piece, shifted to the given position, falls within the board's 
@@ -173,29 +178,60 @@ for piece in pieces:
 placed = []
 placed_names = []
 
-for piece in pieces:  # sorry about the variable names
-	print_board(board)
-	if len(piece["possibilities"]) == 0:
-		print("Oh noes!")
-		break
-	placed_piece = piece["possibilities"][0]
-	placed.append(placed_piece)
-	board_insert(board, placed_piece)
-	placed_names.append(placed_piece["name"])
-	for p in pieces:
-		if p["name"] in placed_names:
-			continue
-		new_possibilities = []
-		for possibility in p["possibilities"]:
-			append_bool = True
-			for c in possibility["coords"]:
-				if c in placed_piece["coords"]:
-					append_bool = False
-					break
-			if append_bool:
-				new_possibilities.append(possibility)
-		p["possibilities"] = new_possibilities
-	print(placed_names)
+# for piece in pieces:  # sorry about the variable names
+# 	print_board(board)
+# 	if len(piece["possibilities"]) == 0:
+# 		print("Oh noes!")
+# 		break
+# 	placed_piece = piece["possibilities"][0]
+# 	placed.append(placed_piece)
+# 	board_insert(board, placed_piece)
+# 	placed_names.append(placed_piece["name"])
+# 	for p in pieces:
+# 		if p["name"] in placed_names:
+# 			continue
+# 		new_possibilities = []
+# 		for possibility in p["possibilities"]:
+# 			append_bool = True
+# 			for c in possibility["coords"]:
+# 				if c in placed_piece["coords"]:
+# 					append_bool = False
+# 					break
+# 			if append_bool:
+# 				new_possibilities.append(possibility)
+# 		p["possibilities"] = new_possibilities
+# 	print(placed_names)
+
+def place_piece(i):
+	if i == len(pieces):
+		print("And there was much rejoicing.")
+		return True
+	piece = pieces[i]
+	l = len(piece["possibilities"])
+	if l = 0:
+		return False
+	board_copy = copy.deepcopy(board)
+	pieces_copy = copy.deepcopy(pieces)
+	for j in range(l):
+		translation = piece["possibilities"][j]
+		board_insert(board, translation)
+		for p in pieces[i+1:]:
+			for possibility in p["possibilities"]:
+				append_bool = True
+				for c in possibility["coords"]:
+					if c in placed_piece["coords"]:
+						append_bool = False
+				if append_bool:
+					new_possibilities.append(possibility)
+			p["possibilities"] = new_possibilities
+		if place_piece(i + 1):
+			return True
+		else:
+			board = board_copy
+			pieces = pieces_copy
+	return False
+
+place_piece(0)
 
 # for piece in pieces:
 # 	print(piece["name"])
