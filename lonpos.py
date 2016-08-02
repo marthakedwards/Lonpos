@@ -7,6 +7,7 @@
 
 import itertools, string
 
+# populate the pieces array
 pieces = []
 pieces.append({"name": "gray", \
 	"coords": [[1, 0], [0, 1], [1, 1], [1, 2], [2, 1]], \
@@ -45,13 +46,15 @@ pieces.append({"name": "orange", \
 	"coords": [[0, 0], [0, 1], [1, 0], [0, 2]], \
 	"height": 2, "width": 3})
 
+# sort the coordinates so we can check for equality
 for piece in pieces:
 	piece["coords"] = sorted(piece["coords"])
 
+# print a representation of the piece to the terminal
 def draw(piece):
 	bar = "  " + "+---" * piece["width"] + "+"
 
-	# find the min x and y so we can draw shifted pieces
+	# find the min x and y, so draw works for shifted pieces
 	min_x = BOARD_WIDTH + 1
 	min_y = BOARD_HEIGHT + 1
 	for coord in piece["coords"]:
@@ -60,14 +63,15 @@ def draw(piece):
 		if coord[1] < min_y:
 			min_y = coord[1]
 
-	# draw 4x4 grid with coordinates where the piece is
+	# draw a grid with dimensions width by height
 	for i in range(min_x, min_x + piece["height"]):
 		print(bar)
 		row = "  |"
 		for j in range(min_y, min_y + piece["width"]):
 			if [i, j] in piece["coords"]:
+				# if the piece contains this cell, print the coordinates
 				cell = "%s,%s" % (i, j)
-				if len(cell) > 3:
+				if len(cell) > 3:  # (for neatness)
 					cell = string.replace(cell, ',', '')
 				row += cell
 			else:
@@ -76,6 +80,7 @@ def draw(piece):
 		print(row)
 	print(bar)
 
+# rotate the piece counterclockwise
 def rotate(piece):
 	new_coords = []
 	for coord in piece["coords"]:
@@ -84,6 +89,7 @@ def rotate(piece):
 		"height": piece["width"], "width": piece["height"]}
 	return new_piece
 
+# reflect the piece across its own center line
 def reflect(piece):
 	new_coords = []
 	for coord in piece["coords"]:
@@ -92,6 +98,7 @@ def reflect(piece):
 		"height": piece["height"], "width": piece["width"]}
 	return new_piece
 
+# shift the piece so its origin, previously (0,0), is now at (position)
 def shift(piece, position):
 	new_coords = []
 	for coord in piece["coords"]:
@@ -100,6 +107,7 @@ def shift(piece, position):
 		"height": piece["height"], "width": piece["width"]}
 	return new_piece
 
+# get all possible rotations and reflections for the piece
 def get_unique_translations(piece):
 	dummy = [piece, \
 		rotate(piece), \
@@ -118,37 +126,39 @@ def get_unique_translations(piece):
 BOARD_WIDTH = 11
 BOARD_HEIGHT = 5
 
+# insert a piece into the board (by the first letter of its name, for now)
 def board_insert(board, piece):
 	for c in piece["coords"]:
-		board[c[0]][c[1]] = piece["name"][0:1]
+		board[c[0]][c[1]] = piece["name"][0]
 
+# print a representation of the board to the terminal
 def print_board(placed):
 	bar = " " + "+---" * BOARD_WIDTH + "+"
 	for i in range(BOARD_HEIGHT):
 		print(bar)
 		row = ""
 		for j in range(BOARD_WIDTH):
-			row += " | " + board[i][j]
+			row += " | " + placed[i][j]
 		row += " |"
 		print(row)
 	print(bar)
 
+# populate the board with empty spaces
 board = [[" " for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT)]
-print_board(board)
 
-
+# check all the possible translations, shifting them to all possible spots,
+# and return all valid possibilities
 def get_all_positions(piece, board):
 	positions = []
 	for translation in get_unique_translations(piece):
-		for i, j in itertools.product(range(BOARD_WIDTH), range(BOARD_HEIGHT)):
-			if is_valid_position(translation, [i, j]):
-				positions.append(shift(translation, [i, j]))
-	for position in positions:
-		b1 = [[" " for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT)]
-		board_insert(b1, position)
-		print_board(b1)
+		for j in range(BOARD_WIDTH):
+			for i in range(BOARD_HEIGHT):
+				if is_valid_position(translation, [i, j]):
+					positions.append(shift(translation, [i, j]))
 	return positions
 
+# check if the piece, shifted to the given position, falls within the board's 
+# dimensions
 def is_valid_position(piece, position):
 	if position[1] + piece["width"] > BOARD_WIDTH:
 		return False
@@ -156,10 +166,9 @@ def is_valid_position(piece, position):
 		return False
 	return True
 
-for piece in pieces:  # maybe not the best way to do this
+# give each piece an array of all of its own possibilities
+for piece in pieces:
 	piece["possibilities"] = get_all_positions(piece, board)
-
-print("got possibilities")
 
 placed = []
 placed_names = []
