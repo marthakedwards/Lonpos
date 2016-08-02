@@ -180,6 +180,16 @@ def get_all_positions(piece, board):
 	# 	print("\n")
 	return positions
 
+# check one of the possible translations, shifting them to all possible spots,
+# and return all valid possibilities
+def get_some_positions(piece, board):
+	positions = []
+	for i in range(BOARD_HEIGHT):
+		for j in range(BOARD_WIDTH):
+			if is_valid_position(piece, [i, j]):
+				positions.append(shift(piece, [i, j]))
+	return positions
+
 # check if the piece, shifted to the given position, falls within the board's
 # dimensions
 def is_valid_position(piece, position):
@@ -192,6 +202,8 @@ def is_valid_position(piece, position):
 # give each piece an array of all of its own possibilities
 for piece in pieces:
 	piece["possibilities"] = get_all_positions(piece, board)
+# special case the first piece, to avoid double counting solutions
+pieces[0]["possibilities"] = get_some_positions(pieces[0], board)
 
 placed = []
 placed_names = []
@@ -270,11 +282,17 @@ def tiny_hole(board, pieces):
 			return True
 	return False
 
+solutions = 0
+
 def place_piece(i):
 	global pieces
 	global board
+	global solutions
 	if i == len(pieces):
+		solutions += 1
+		print("#" + str(solutions))
 		print_board(board)
+		print("\n")
 		return
 	piece = pieces[i]
 	l = len(piece["possibilities"])
