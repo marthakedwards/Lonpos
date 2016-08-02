@@ -223,6 +223,7 @@ def place_piece(i):
 	return False
 
 print(place_piece(0))
+print_board(board)
 
 # for piece in pieces:
 # 	print(piece["name"])
