@@ -46,18 +46,18 @@ pieces.append({"name": "orange", \
 	"coords": [[0, 0], [0, 1], [1, 0], [0, 2]], \
 	"height": 2, "width": 3})
 
-pieces[0]["name"] = '\033[4;31m' + u"\u25C9" + '\033[0m'
-pieces[1]["name"] = '\033[4;37m' + u"\u25C9" + '\033[0m'
+pieces[0]["name"] = '\033[0;31m' + u"\u25C9" + '\033[0m'
+pieces[1]["name"] = '\033[1;37m' + u"\u25C9" + '\033[0m'
 pieces[2]["name"] = '\033[0;34m' + u"\u25C9" + '\033[0m'
 pieces[3]["name"] = '\033[0;36m' + u"\u25C9" + '\033[0m'
-pieces[4]["name"] = '\033[4;35m' + u"\u25C9" + '\033[0m'
+pieces[4]["name"] = '\033[0;35m' + u"\u25CE" + '\033[0m'
 pieces[5]["name"] = '\033[1;32m' + u"\u25C9" + '\033[0m'
 pieces[6]["name"] = '\033[0;32m' + u"\u25C9" + '\033[0m'
 pieces[7]["name"] = '\033[0;37m' + u"\u25C9" + '\033[0m'
 pieces[8]["name"] = '\033[1;35m' + u"\u25C9" + '\033[0m'
 pieces[9]["name"] = '\033[0;35m' + u"\u25C9" + '\033[0m'
-pieces[10]["name"] = '\033[0;33m'+ u"\u25C9" + '\033[0m'
-pieces[11]["name"] = '\033[1;31m'+ u"\u25C9" + '\033[0m'
+pieces[10]["name"] ='\033[0;33m' + u"\u25C9" + '\033[0m'
+pieces[11]["name"] ='\033[1;31m' + u"\u25C9" + '\033[0m'
 
 # sort the coordinates so we can check for equality
 for piece in pieces:
@@ -184,10 +184,13 @@ def get_all_positions(piece, board):
 # and return all valid possibilities
 def get_some_positions(piece, board):
 	positions = []
+	rotated = rotate(piece)
 	for i in range(BOARD_HEIGHT):
 		for j in range(BOARD_WIDTH):
 			if is_valid_position(piece, [i, j]):
 				positions.append(shift(piece, [i, j]))
+			if is_valid_position(rotated, [i, j]):
+				positions.append(shift(rotated, [i, j]))
 	return positions
 
 # check if the piece, shifted to the given position, falls within the board's
@@ -292,7 +295,7 @@ def place_piece(i):
 		solutions += 1
 		print("#" + str(solutions))
 		print_board(board)
-		print("\n")
+		print
 		return
 	piece = pieces[i]
 	l = len(piece["possibilities"])
