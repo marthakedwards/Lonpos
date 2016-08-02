@@ -203,12 +203,15 @@ placed_names = []
 # 	print(placed_names)
 
 def place_piece(i):
+	print i
+	global pieces
+	global board
 	if i == len(pieces):
 		print("And there was much rejoicing.")
 		return True
 	piece = pieces[i]
 	l = len(piece["possibilities"])
-	if l = 0:
+	if l == 0:
 		return False
 	board_copy = copy.deepcopy(board)
 	pieces_copy = copy.deepcopy(pieces)
@@ -216,11 +219,13 @@ def place_piece(i):
 		translation = piece["possibilities"][j]
 		board_insert(board, translation)
 		for p in pieces[i+1:]:
+			new_possibilities = []
 			for possibility in p["possibilities"]:
 				append_bool = True
 				for c in possibility["coords"]:
-					if c in placed_piece["coords"]:
+					if c in translation["coords"]:
 						append_bool = False
+						break
 				if append_bool:
 					new_possibilities.append(possibility)
 			p["possibilities"] = new_possibilities
@@ -231,7 +236,8 @@ def place_piece(i):
 			pieces = pieces_copy
 	return False
 
-place_piece(0)
+print(place_piece(0))
+print_board(board)
 
 # for piece in pieces:
 # 	print(piece["name"])
