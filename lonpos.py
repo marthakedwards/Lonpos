@@ -46,18 +46,18 @@ pieces.append({"name": "orange", \
 	"coords": [[0, 0], [0, 1], [1, 0], [0, 2]], \
 	"height": 2, "width": 3})
 
-pieces[0]["name"] = '\033[4;31m' + 'O' + '\033[0m'
-pieces[1]["name"] = '\033[4;37m' + 'O' + '\033[0m'
-pieces[2]["name"] = '\033[0;34m' + 'O' + '\033[0m'
-pieces[3]["name"] = '\033[0;36m' + 'O' + '\033[0m'
-pieces[4]["name"] = '\033[4;35m' + 'O' + '\033[0m'
-pieces[5]["name"] = '\033[1;32m' + 'O' + '\033[0m'
-pieces[6]["name"] = '\033[0;32m' + 'O' + '\033[0m'
-pieces[7]["name"] = '\033[0;37m' + 'O' + '\033[0m'
-pieces[8]["name"] = '\033[1;35m' + 'O' + '\033[0m'
-pieces[9]["name"] = '\033[0;35m' + 'O' + '\033[0m'
-pieces[10]["name"] = '\033[0;33m' + 'O' + '\033[0m'
-pieces[11]["name"] = '\033[1;31m' + 'O' + '\033[0m'
+pieces[0]["name"] = '\033[4;31m' + u"\u25C9" + '\033[0m'
+pieces[1]["name"] = '\033[4;37m' + u"\u25C9" + '\033[0m'
+pieces[2]["name"] = '\033[0;34m' + u"\u25C9" + '\033[0m'
+pieces[3]["name"] = '\033[0;36m' + u"\u25C9" + '\033[0m'
+pieces[4]["name"] = '\033[4;35m' + u"\u25C9" + '\033[0m'
+pieces[5]["name"] = '\033[1;32m' + u"\u25C9" + '\033[0m'
+pieces[6]["name"] = '\033[0;32m' + u"\u25C9" + '\033[0m'
+pieces[7]["name"] = '\033[0;37m' + u"\u25C9" + '\033[0m'
+pieces[8]["name"] = '\033[1;35m' + u"\u25C9" + '\033[0m'
+pieces[9]["name"] = '\033[0;35m' + u"\u25C9" + '\033[0m'
+pieces[10]["name"] = '\033[0;33m'+ u"\u25C9" + '\033[0m'
+pieces[11]["name"] = '\033[1;31m'+ u"\u25C9" + '\033[0m'
 
 # sort the coordinates so we can check for equality
 for piece in pieces:
@@ -220,6 +220,56 @@ placed_names = []
 # 		p["possibilities"] = new_possibilities
 # 	print(placed_names)
 
+def hole_around(c, empties):
+	hole = [c]
+	for h in hole:
+		left = [h[0] - 1, h[1]]
+		right = [h[0] + 1, h[1]]
+		up = [h[0], h[1] - 1]
+		down = [h[0], h[1] + 1]
+		neighbors = [left, right, up, down]
+		for n in neighbors:
+			if n in empties:
+				empties.remove(n)
+				hole.append(n)
+				newBool = True
+	min_x = BOARD_WIDTH + 1
+	min_y = BOARD_HEIGHT + 1
+	for h in hole:
+		if h[0] < min_x:
+			min_x = h[0]
+		if h[1] < min_y:
+			min_y = h[1]
+	origin_hole = []
+	for h in hole:
+		origin_hole.append([h[0] - min_x, h[1] - min_y])
+	return hole
+
+def tiny_hole(board, pieces):
+	empties = []
+	for i in range(BOARD_HEIGHT):
+		for j in range(BOARD_WIDTH):
+			if board[i][j] == " ":
+				empties.append([i, j])
+	holes = []
+	for e in empties:
+		holes.append(hole_around(e, empties))
+	for hole in holes:
+		pBool = False
+		for piece in pieces:
+			for poss in piece["possibilities"]:
+				fitBool = True
+				for c in poss["coords"]:
+					if c not in hole:
+						fitBool = False
+						break
+				if fitBool:
+					pBool = True
+					break
+		if not pBool:
+			return True
+	return False
+
 def place_piece(i):
 	global pieces
 	global board
@@ -237,6 +287,9 @@ def place_piece(i):
 		piece_copy = copy.deepcopy(piece)
 		translation = piece["possibilities"][j]
 		board_insert(board, translation)
+		if tiny_hole(board, pieces[i + 1:]):
+			board_remove(board, translation)
+			continue
 		for p in pieces:
 			new_possibilities = []
 			for possibility in p["possibilities"]:
