@@ -5,7 +5,7 @@
 # pick the first piece, place it somewhere, then get rid of all the options
 # for all the other pieces that would intersect
 
-import itertools
+import itertools, string
 
 pieces = []
 pieces.append({"name": "gray", \
@@ -68,7 +68,6 @@ def draw(piece):
 			if [i, j] in piece["coords"]:
 				cell = "%s,%s" % (i, j)
 				if len(cell) > 3:
-					import string
 					cell = string.replace(cell, ',', '')
 				row += cell
 			else:
@@ -165,28 +164,29 @@ print("got possibilities")
 placed = []
 placed_names = []
 
-# for piece in pieces:  # sorry about the variable names
-# 	print_board(board)
-# 	if len(piece["possibilities"]) == 0:
-# 		print("Oh noes!")
-# 		break
-# 	placed_piece = piece["possibilities"][0]
-# 	placed.append(placed_piece)
-# 	board_insert(board, placed_piece)
-# 	placed_names.append(placed_piece["name"])
-# 	for p in pieces:
-# 		if p["name"] in placed_names:
-# 			continue
-# 		new_possibilities = []
-# 		for possibility in p["possibilities"]:
-# 			append_bool = True
-# 			for c in possibility["coords"]:
-# 				if c in placed_piece["coords"]:
-# 					append_bool = False
-# 			if append_bool:
-# 				new_possibilities.append(possibility)
-# 		p["possibilities"] = new_possibilities
-# 	print(placed_names)
+for piece in pieces:  # sorry about the variable names
+	print_board(board)
+	if len(piece["possibilities"]) == 0:
+		print("Oh noes!")
+		break
+	placed_piece = piece["possibilities"][0]
+	placed.append(placed_piece)
+	board_insert(board, placed_piece)
+	placed_names.append(placed_piece["name"])
+	for p in pieces:
+		if p["name"] in placed_names:
+			continue
+		new_possibilities = []
+		for possibility in p["possibilities"]:
+			append_bool = True
+			for c in possibility["coords"]:
+				if c in placed_piece["coords"]:
+					append_bool = False
+					break
+			if append_bool:
+				new_possibilities.append(possibility)
+		p["possibilities"] = new_possibilities
+	print(placed_names)
 
 # for piece in pieces:
 # 	print(piece["name"])
