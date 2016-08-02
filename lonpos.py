@@ -129,6 +129,8 @@ for piece in pieces:  # maybe not the best way to do this
 placed = []
 placed_names = []
 
+
+
 for piece in pieces:  # sorry about the variable names
 	if len(piece["possibilities"]) == 0:
 		print "Oh noes!"
@@ -141,10 +143,14 @@ for piece in pieces:  # sorry about the variable names
 			continue
 		new_possibilities = []
 		for possibility in p["possibilities"]:
+			append_bool = True
 			for c in possibility["coords"]:
-				if c not in placed_piece["coords"]:
-					new_possibilities.append(possibility)
+				if c in placed_piece["coords"]:
+					append_bool = False
+			if append_bool:
+				new_possibilities.append(possibility)
 		p["possibilities"] = new_possibilities
+		print len(p["possibilities"])
 	print placed_names
 
 # for piece in pieces:
