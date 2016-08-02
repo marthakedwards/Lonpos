@@ -46,13 +46,6 @@ pieces.append({"name": "orange", \
 for piece in pieces:
 	piece["coords"] = sorted(piece["coords"])
 
-board = []
-for i in range(5):
-	for j in range(11):
-		board.append({"cell": [i, j], "empty": True})
-
-slots = []
-
 def draw(piece):
 	bar = "  " + "+---" * piece["width"] + "+"
 	# draw 4x4 grid with O's where the piece is
@@ -84,6 +77,13 @@ def reflect(piece):
 		"height": piece["height"], "width": piece["width"]}
 	return new_piece
 
+def shift(piece, position):
+	new_coords = []
+	for coord in piece["coords"]:
+		new_coords.append([coord[0] + position[0], coord[1] + position[1]])
+	new_piece = {"name": piece["name"], "coords": sorted(new_coords), \
+		"height": piece["height"], "width": piece["width"]}
+	return new_piece
 
 def get_unique_translations(piece):
 	dummy = [piece, \
@@ -100,13 +100,58 @@ def get_unique_translations(piece):
 			translations.append(translation)
 	return translations
 
+BOARD_WIDTH = 11
+BOARD_HEIGHT = 5
+
+board = []
+for i in range(0, BOARD_WIDTH):
+	for j in range(0, BOARD_HEIGHT):
+		board.append([i, j])
+
 def get_all_positions(piece, board):
-	for translation in get_unique_translations(piece)
-
-
-for piece in pieces:
-	print(piece["name"])
+	positions = []
 	for translation in get_unique_translations(piece):
-		draw(translation)
-	print("\n\n")
+		for position in board:
+			if is_valid_position(translation, position):
+				positions.append(shift(translation, position))
+	return positions
+
+def is_valid_position(piece, position):
+	if position[0] + piece["width"] > BOARD_WIDTH:
+		return False
+	if position[1] + piece["height"] > BOARD_HEIGHT:
+		return False
+	return True
+
+for piece in pieces:  # maybe not the best way to do this
+	piece["possibilities"] = get_all_positions(piece, board)
+
+print("got possibilities")
+
+placed = []
+placed_names = []
+
+for piece in pieces:  # sorry about the variable names
+	if len(piece["possibilities"]) == 0:
+		print("Oh noes!")
+		break
+	placed_piece = piece["possibilities"][0]
+	placed.append(placed_piece)
+	placed_names.append(placed_piece["name"])
+	for p in pieces:
+		if p["name"] in placed_names:
+			continue
+		new_possibilities = []
+		for possibility in p["possibilities"]:
+			for c in possibility["coords"]:
+				if c not in placed_piece["coords"]:
+					new_possibilities.append(possibility)
+		p["possibilities"] = new_possibilities
+	print(placed_names)
+
+# for piece in pieces:
+# 	print(piece["name"])
+# 	for translation in get_unique_translations(piece):
+# 		draw(translation)
+# 	print("\n\n")
 
