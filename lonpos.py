@@ -46,6 +46,11 @@ pieces.append({"name": "orange", \
 for piece in pieces:
 	piece["coords"] = sorted(piece["coords"])
 
+board = []
+for i in range(5):
+	for j in range(11):
+		board.append({"cell": [i, j], "empty": True})
+
 slots = []
 
 def draw(piece):
@@ -79,8 +84,6 @@ def reflect(piece):
 		"height": piece["height"], "width": piece["width"]}
 	return new_piece
 
-# def get_all_positions(piece, board):
-
 
 def get_unique_translations(piece):
 	dummy = [piece, \
@@ -96,6 +99,10 @@ def get_unique_translations(piece):
 		if translation not in translations:
 			translations.append(translation)
 	return translations
+
+def get_all_positions(piece, board):
+	for translation in get_unique_translations(piece)
+
 
 for piece in pieces:
 	print(piece["name"])
