@@ -121,7 +121,7 @@ BOARD_HEIGHT = 5
 
 def board_insert(board, piece):
 	for c in piece["coords"]:
-		board[c[0]][c[1]] = piece["name"][0:1]
+		board[c[0]][c[1]] = piece["name"][0]
 
 def print_board(placed):
 	bar = " " + "+---" * BOARD_WIDTH + "+"
@@ -129,7 +129,7 @@ def print_board(placed):
 		print(bar)
 		row = ""
 		for j in range(BOARD_WIDTH):
-			row += " | " + board[i][j]
+			row += " | " + placed[i][j]
 		row += " |"
 		print(row)
 	print(bar)
@@ -141,9 +141,10 @@ print_board(board)
 def get_all_positions(piece, board):
 	positions = []
 	for translation in get_unique_translations(piece):
-		for i, j in itertools.product(range(BOARD_WIDTH), range(BOARD_HEIGHT)):
-			if is_valid_position(translation, [i, j]):
-				positions.append(shift(translation, [i, j]))
+		for i in range(BOARD_WIDTH):
+			for j in range(BOARD_HEIGHT):
+				if is_valid_position(translation, [i, j]):
+					positions.append(shift(translation, [i, j]))
 	for position in positions:
 		b1 = [[" " for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT)]
 		board_insert(b1, position)
