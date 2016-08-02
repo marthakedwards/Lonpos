@@ -119,6 +119,10 @@ def get_unique_translations(piece):
 BOARD_WIDTH = 11
 BOARD_HEIGHT = 5
 
+def board_insert(board, piece):
+	for c in piece["coords"]:
+		board[c[0]][c[1]] = piece["name"][0:1]
+
 def print_board(placed):
 	bar = " " + "+---" * BOARD_WIDTH + "+"
 	for i in range(BOARD_HEIGHT):
@@ -140,12 +144,16 @@ def get_all_positions(piece, board):
 		for i, j in itertools.product(range(BOARD_WIDTH), range(BOARD_HEIGHT)):
 			if is_valid_position(translation, [i, j]):
 				positions.append(shift(translation, [i, j]))
+	for position in positions:
+		b1 = [[" " for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT)]
+		board_insert(b1, position)
+		print_board(b1)
 	return positions
 
 def is_valid_position(piece, position):
-	if position[0] + piece["width"] > BOARD_WIDTH:
+	if position[1] + piece["width"] > BOARD_WIDTH:
 		return False
-	if position[1] + piece["height"] > BOARD_HEIGHT:
+	if position[0] + piece["height"] > BOARD_HEIGHT:
 		return False
 	return True
 
@@ -157,34 +165,28 @@ print("got possibilities")
 placed = []
 placed_names = []
 
-def board_insert(board, piece):
-	for c in piece["coords"]:
-		if board[c[0]][c[1]] == None:
-			print("ahh!")
-		board[c[0]][c[1]] = piece["name"][0]
-
-for piece in pieces:  # sorry about the variable names
-	if len(piece["possibilities"]) == 0:
-		print_board(board)
-		print("Oh noes!")
-		break
-	placed_piece = piece["possibilities"][0]
-	placed.append(placed_piece)
-	board_insert(board, piece)
-	placed_names.append(placed_piece["name"])
-	for p in pieces:
-		if p["name"] in placed_names:
-			continue
-		new_possibilities = []
-		for possibility in p["possibilities"]:
-			append_bool = True
-			for c in possibility["coords"]:
-				if c in placed_piece["coords"]:
-					append_bool = False
-			if append_bool:
-				new_possibilities.append(possibility)
-		p["possibilities"] = new_possibilities
-	print(placed_names)
+# for piece in pieces:  # sorry about the variable names
+# 	print_board(board)
+# 	if len(piece["possibilities"]) == 0:
+# 		print("Oh noes!")
+# 		break
+# 	placed_piece = piece["possibilities"][0]
+# 	placed.append(placed_piece)
+# 	board_insert(board, placed_piece)
+# 	placed_names.append(placed_piece["name"])
+# 	for p in pieces:
+# 		if p["name"] in placed_names:
+# 			continue
+# 		new_possibilities = []
+# 		for possibility in p["possibilities"]:
+# 			append_bool = True
+# 			for c in possibility["coords"]:
+# 				if c in placed_piece["coords"]:
+# 					append_bool = False
+# 			if append_bool:
+# 				new_possibilities.append(possibility)
+# 		p["possibilities"] = new_possibilities
+# 	print(placed_names)
 
 # for piece in pieces:
 # 	print(piece["name"])
@@ -192,6 +194,6 @@ for piece in pieces:  # sorry about the variable names
 # 		draw(translation)
 # 	print("\n\n")
 
-for possibility in pieces[3]["possibilities"]:
-	draw(possibility)
-	print("\n\n")
+# for possibility in pieces[3]["possibilities"]:
+# 	draw(possibility)
+# 	print("\n\n")
