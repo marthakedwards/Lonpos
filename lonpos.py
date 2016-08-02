@@ -5,6 +5,8 @@
 # pick the first piece, place it somewhere, then get rid of all the options
 # for all the other pieces that would intersect
 
+import itertools
+
 pieces = []
 pieces.append({"name": "gray", \
 	"coords": [[1, 0], [0, 1], [1, 1], [1, 2], [2, 1]], \
@@ -103,17 +105,27 @@ def get_unique_translations(piece):
 BOARD_WIDTH = 11
 BOARD_HEIGHT = 5
 
-board = []
-for i in range(0, BOARD_WIDTH):
-	for j in range(0, BOARD_HEIGHT):
-		board.append([i, j])
+def print_board(placed):
+	bar = " " + "+---" * BOARD_WIDTH + "+"
+	for i in range(BOARD_HEIGHT):
+		print(bar)
+		row = ""
+		for j in range(BOARD_WIDTH):
+			row += " | " + board[i][j]
+		row += " |"
+		print(row)
+	print(bar)
+
+board = [[" " for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT)]
+print_board(board)
+
 
 def get_all_positions(piece, board):
 	positions = []
 	for translation in get_unique_translations(piece):
-		for position in board:
-			if is_valid_position(translation, position):
-				positions.append(shift(translation, position))
+		for i, j in itertools.product(range(BOARD_WIDTH), range(BOARD_HEIGHT)):
+			if is_valid_position(translation, [i, j]):
+				positions.append(shift(translation, [i, j]))
 	return positions
 
 def is_valid_position(piece, position):
@@ -131,21 +143,32 @@ print("got possibilities")
 placed = []
 placed_names = []
 
+def board_insert(board, piece):
+	for c in piece["coords"]:
+		if board[c[0]][c[1]] == None:
+			print("ahh!")
+		board[c[0]][c[1]] = piece["name"][0]
+
 for piece in pieces:  # sorry about the variable names
 	if len(piece["possibilities"]) == 0:
+		print_board(board)
 		print("Oh noes!")
 		break
 	placed_piece = piece["possibilities"][0]
 	placed.append(placed_piece)
+	board_insert(board, piece)
 	placed_names.append(placed_piece["name"])
 	for p in pieces:
 		if p["name"] in placed_names:
 			continue
 		new_possibilities = []
 		for possibility in p["possibilities"]:
+			append_bool = True
 			for c in possibility["coords"]:
-				if c not in placed_piece["coords"]:
-					new_possibilities.append(possibility)
+				if c in placed_piece["coords"]:
+					append_bool = False
+			if append_bool:
+				new_possibilities.append(possibility)
 		p["possibilities"] = new_possibilities
 	print(placed_names)
 
