@@ -48,13 +48,27 @@ for piece in pieces:
 
 def draw(piece):
 	bar = "  " + "+---" * piece["width"] + "+"
-	# draw 4x4 grid with O's where the piece is
-	for i in range(piece["height"]):
+
+	# find the min x and y so we can draw shifted pieces
+	min_x = BOARD_WIDTH + 1
+	min_y = BOARD_HEIGHT + 1
+	for coord in piece["coords"]:
+		if coord[0] < min_x:
+			min_x = coord[0]
+		if coord[1] < min_y:
+			min_y = coord[1]
+
+	# draw 4x4 grid with coordinates where the piece is
+	for i in range(min_x, min_x + piece["height"]):
 		print(bar)
 		row = "  |"
-		for j in range(piece["width"]):
+		for j in range(min_y, min_y + piece["width"]):
 			if [i, j] in piece["coords"]:
-				row += " O "
+				cell = "%s,%s" % (i, j)
+				if len(cell) > 3:
+					import string
+					cell = string.replace(cell, ',', '')
+				row += cell
 			else:
 				row += "   "
 			row += "|"
@@ -129,8 +143,6 @@ for piece in pieces:  # maybe not the best way to do this
 placed = []
 placed_names = []
 
-
-
 for piece in pieces:  # sorry about the variable names
 	if len(piece["possibilities"]) == 0:
 		print "Oh noes!"
@@ -159,3 +171,6 @@ for piece in pieces:  # sorry about the variable names
 # 		draw(translation)
 # 	print("\n\n")
 
+for possibility in pieces[3]["possibilities"]:
+	draw(possibility)
+	print("\n\n")
