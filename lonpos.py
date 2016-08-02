@@ -135,8 +135,6 @@ def print_board(placed):
 	print(bar)
 
 board = [[" " for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT)]
-print_board(board)
-
 
 def get_all_positions(piece, board):
 	positions = []
@@ -161,8 +159,6 @@ def is_valid_position(piece, position):
 
 for piece in pieces:  # maybe not the best way to do this
 	piece["possibilities"] = get_all_positions(piece, board)
-
-print("got possibilities")
 
 placed = []
 placed_names = []
@@ -191,6 +187,7 @@ placed_names = []
 # 	print(placed_names)
 
 def place_piece(i):
+	print(i)
 	global pieces
 	global board
 	if i == len(pieces):
@@ -198,19 +195,21 @@ def place_piece(i):
 		return True
 	piece = pieces[i]
 	l = len(piece["possibilities"])
+	print("l: " + str(l))
 	if l == 0:
 		return False
 	board_copy = copy.deepcopy(board)
 	pieces_copy = copy.deepcopy(pieces)
 	for j in range(l):
+		print("j: " + str(j))
 		translation = piece["possibilities"][j]
 		board_insert(board, translation)
-		for p in pieces[i+1:]:
+		for p in pieces:
 			new_possibilities = []
 			for possibility in p["possibilities"]:
 				append_bool = True
 				for c in possibility["coords"]:
-					if c in piece["coords"]:
+					if c in translation["coords"]:
 						append_bool = False
 				if append_bool:
 					new_possibilities.append(possibility)
