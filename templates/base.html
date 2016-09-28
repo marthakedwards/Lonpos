@@ -1,0 +1,19 @@
+<!doctype html>
+
+<html>
+  <head>
+    {% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='lonpos.css') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='favicon.ico') }}"/>
+    <title>Lonpos</title>
+    {% endblock %}
+  </head>
+  <body>
+    <div class="page-wrap">
+      {% block content %}{% endblock content %}
+    </div>
+
+    {% block scripts %}
+    {% endblock scripts %}
+  </body>
+</html>

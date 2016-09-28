@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+flattery
+{% endblock content %}
+{% block scripts %}
+
+<script type="text/javascript">
+  var data = "{{ coordinates }}";
+</script>
+
+<script src="{{ url_for('static', filename='three.js') }}"></script>
+<script src="{{ url_for('static', filename='flat.js') }}"></script>
+
+{% endblock scripts %}
