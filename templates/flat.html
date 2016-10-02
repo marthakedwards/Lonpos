@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-flattery
 {% endblock content %}
 {% block scripts %}
 
 <script type="text/javascript">
-  var data = "{{ coordinates }}";
+  var data = {{ coordinates|safe }};
 </script>
 
 <script src="{{ url_for('static', filename='three.js') }}"></script>
